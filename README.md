@@ -25,8 +25,6 @@ They include:
 
 L1B products are designed to capture both the spectral content and the multi-scale statistical structure of the SAR signal.
 
----
-
 ### Level-1C (L1C)
 
 L1C products extend L1B datasets by adding geophysical context through ancillary data.  
@@ -63,13 +61,11 @@ pip install -e .
 
 ---
 
-## ⚙️ Configuration System
+## ⚙️ Example Usage 
+
+### Configuration System
 
 Processing parameters are defined using YAML configuration files (e.g. `l1b_config.yaml`, `l1c_config.yaml`).
-
----
-
-## 🧪 Example Usage
 
 ### Generate a Level-1B product
 
