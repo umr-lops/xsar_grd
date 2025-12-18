@@ -1,5 +1,4 @@
 # Python
-
 __pycache__/
 *.py[cod]
 *.so
@@ -38,3 +37,11 @@ htmlcov/
 # Local config overrides
 *l1b_config*.yaml
 *l1c_config*.yaml
+
+# filesystem 
+.nfs*
+
+# Editor temp files
+*.swp
+*.swo
+*~
