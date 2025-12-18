@@ -128,8 +128,8 @@ def build_l1b_fileout(
     # --- Filename ---
     file_out = f"{prefix}_{cfg_id}"
 
-    if version is not None:
-        file_out += f"_v{version.replace('.', '')}"
+    # if version is not None:
+    #     file_out += f"_v{version.replace('.', '')}"
 
     file_out += ".nc"
 

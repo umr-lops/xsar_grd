@@ -45,3 +45,6 @@ htmlcov/
 *.swp
 *.swo
 *~
+
+# Production
+l1c_production_reports/
