@@ -2,117 +2,85 @@
 
 **xsargrd** is a Python library designed to process SAR images acquired in **GRD mode** and to generate intermediate and analysis-ready products for oceanographic and geophysical applications.
 
-The library focuses primarily on **Sentinel-1**, with planned or partial support for **RCM (RADARSAT Constellation Mission)** and **RADARSAT-2 (RS2)** data.
+The library is applicable to **Sentinel-1**, **RCM (RADARSAT Constellation Mission)** and **RADARSAT-2 (RS2)** SAR missions, with Sentinel-1 currently being the most maturely supported.
 
 ---
 
-## 🚀 Main Features
-
-- Ingestion of SAR GRD products
-- Generation of **Level-1B (L1B)** products:
-  - Tiling of SAR images
-  - Spectral representations
-  - Statistical descriptors derived from **Scattering Transform** representations
-  - Multi-resolution processing
-- Generation of **Level-1C (L1C)** products:
-  - Ingestion and colocation of ancillary geophysical datasets
-  - Raster-to-tile interpolation
-  - Homogenized, analysis-ready datasets
-- Modular and configurable processing pipelines
-- Designed for **large-scale production** as well as **interactive scientific analysis**
-
----
-
-## 📦 Processing Levels
+## 🚀 Features & Processing Levels
 
 ### Level-1B (L1B)
 
-L1B products are derived from SAR GRD images and include:
-- Spatial tiling of the SAR image
-- Computation of spectral quantities
-- Computation of statistical features based on **Scattering Transform representations**
-- Multi-scale and multi-orientation descriptors
-- Products stored as NetCDF datasets
+L1B products are derived from SAR GRD images and provide a physically and statistically rich description of the SAR signal.  
+They include:
 
-These products are intended to capture both the spectral content and the multi-scale statistical structure of SAR backscatter.
+- Spatial tiling of SAR GRD images
+- Computation of **power spectra**
+- Estimation of **C-wave parameters**
+- Computation of **Scattering Transform coefficients**:
+  - Multi-scale
+  - Multi-orientation
+  - Statistical descriptors of SAR backscatter variability
+- Multi-resolution processing
+- Storage as self-described **NetCDF datasets**
+
+L1B products are designed to capture both the spectral content and the multi-scale statistical structure of the SAR signal.
 
 ---
 
 ### Level-1C (L1C)
 
-L1C products extend L1B datasets by:
-- Adding colocated ancillary fields (e.g. wind, wave or model-based products)
-- Interpolating raster datasets onto SAR tile centers
-- Providing consistent geophysical context for each SAR tile
+L1C products extend L1B datasets by adding geophysical context through ancillary data.  
+They include:
 
-L1C products are designed to be directly usable for statistical analysis, machine learning or physical interpretation.
+- Ingestion and colocation of external ancillary datasets (e.g. wind or wave products)
+- Raster-to-tile interpolation onto SAR tile centers
+- Consistent enrichment of L1B products
+- Generation of homogeneous, analysis-ready datasets
+
+L1C products are intended for direct use in statistical analysis, machine learning workflows, or physical interpretation.
 
 ---
 
 ## 🛰️ Supported Missions
 
 - **Sentinel-1** (primary target, fully supported)
-- **RCM (RADARSAT Constellation Mission)** (partial / under development)
-- **RADARSAT-2 (RS2)** (partial / under development)
+- **RCM (RADARSAT Constellation Mission)** (supported, some features under development)
+- **RADARSAT-2 (RS2)** (supported, some features under development)
 
-Some missions or configurations may raise `NotImplementedError` where support is incomplete.
-
----
-
-## 🗂️ Package Structure
-
-xsargrd/
-├── l1b/
-│ ├── generate.py # L1B generation pipeline
-│ ├── tools.py # L1B helper functions
-│ ├── cwave.py
-│ ├── scatt.py
-│ └── spectra.py
-│
-├── l1c/
-│ ├── generate.py # L1C generation pipeline
-│ ├── pipeline.py # L1C enrichment logic
-│ ├── ancillaries.py # Ancillary handling
-│ ├── coloc.py # Raster-to-tile colocation
-│ ├── raster_readers.py
-│ └── tools.py
-│
-├── config.py # Configuration loading utilities
-└── init.py
-
-
+Some mission-specific configurations may raise `NotImplementedError` where support is incomplete.
 
 ---
+
 ## 📦 Installation
 
 ### Using pip (editable mode, recommended for development)
 
 ```bash
-git clone https://github.com/<your-username>/xsargrd.git
-cd xsargrd
+git clone https://github.com/Egauvrit/xsar_grd.git
+cd xsar_grd
 pip install -e .
 ```
 
 ---
+
 ## ⚙️ Configuration System
 
-Processing parameters are defined using YAML configuration files (e.g. `l1b_config.yaml`, `l1c_config.yaml`).
-
-This allows:
-- Reproducible large-scale production
-- Easy tracking of processing configurations
-- Flexible usage outside production (e.g. notebooks, experiments)
+Processing parameters are defined using YAML configuration files (e.g. l1b_config.yaml, l1c_config.yaml).
 
 ---
 
 ## 🧪 Example Usage
 
+### Generate a Level-1B product
+
 ```python
 from xsargrd import generate_l1b, load_config
 
+# --- load L1B configuration ---
 config = load_config("l1b")
 c = config["A01"]
 
+# --- produce L1B ---
 generate_l1b(
     fullpath="/path/to/SAR/GRD/product",
     dirout=c["dirout"],
@@ -124,3 +92,21 @@ generate_l1b(
     scatt_mode=c["scatt_mode"],
     norient=c["norient"],
 )
+```
+
+### Generate a Level-1C product from L1B
+
+```python
+from xsargrd import generate_l1c_from_l1b, load_config
+
+# --- load L1C configuration ---
+config = load_config("l1c")
+
+# --- produce L1C ---
+generate_l1c_from_l1b(
+    fullpath_l1b="/path/to/L1B/product",
+    res=res,
+    ancillary_list=config["ancillary_list"],
+)
+```
+
