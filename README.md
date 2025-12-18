@@ -65,7 +65,7 @@ pip install -e .
 
 ## ⚙️ Configuration System
 
-Processing parameters are defined using YAML configuration files (e.g. l1b_config.yaml, l1c_config.yaml).
+Processing parameters are defined using YAML configuration files (e.g. `l1b_config.yaml`, `l1c_config.yaml`).
 
 ---
 
