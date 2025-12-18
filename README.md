@@ -19,8 +19,6 @@ They include:
 - Computation of **Scattering Transform coefficients**:
   - Multi-scale
   - Multi-orientation
-  - Statistical descriptors of SAR backscatter variability
-- Multi-resolution processing
 - Storage as self-described **NetCDF datasets**
 
 L1B products are designed to capture both the spectral content and the multi-scale statistical structure of the SAR signal.
@@ -30,9 +28,8 @@ L1B products are designed to capture both the spectral content and the multi-sca
 L1C products extend L1B datasets by adding geophysical context through ancillary data.  
 They include:
 
-- Ingestion and colocation of external ancillary datasets (e.g. wind or wave products)
+- Ingestion and colocation of external ancillary datasets (e.g. wind & wave products)
 - Raster-to-tile interpolation onto SAR tile centers
-- Consistent enrichment of L1B products
 - Generation of homogeneous, analysis-ready datasets
 
 L1C products are intended for direct use in statistical analysis, machine learning workflows, or physical interpretation.
