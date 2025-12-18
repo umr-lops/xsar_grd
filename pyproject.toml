@@ -1,0 +1,47 @@
+[project]
+name = "xsargrd"
+version = "0.1.0"
+description = "Python library to compute spectra from SAR images in GRD mode."
+authors = [
+    { name = "Edouard Gauvrit", email = "edouard.gauvrit@ifremer.fr" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "xarray>=2024.10.0",
+    "numpy",
+    "netCDF4",
+    "h5netcdf",
+    "shapely",
+    "xrft",
+    "importlib_resources",
+    'tqdm'
+]
+
+[build-system]
+requires = ["setuptools>=64.0", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
+fallback_version = "999"
+
+[tool.isort]
+profile = "black"
+skip_gitignore = true
+float_to_top = true
+default_section = "THIRDPARTY"
+known_first_party = "xsargrd"
+
+[tool.black]
+line-length = 100
+
+[tool.coverage.run]
+source = ["xsargrd"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING"]

@@ -1,0 +1,40 @@
+# Python
+
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.eggs/
+
+# Virtual env
+.venv/
+env/
+venv/
+
+# Build
+build/
+dist/
+
+# Coverage / tests
+.coverage
+htmlcov/
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# NetCDF / data
+*.nc
+*.h5
+*.zarr
+
+# Local config overrides
+*l1b_config*.yaml
+*l1c_config*.yaml
