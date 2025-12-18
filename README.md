@@ -97,13 +97,13 @@ generate_l1b(
 ### Generate a Level-1C product from L1B
 
 ```python
-from xsargrd import generate_l1c_from_l1b, load_config
+from xsargrd import generate_l1c, load_config
 
 # --- load L1C configuration ---
 config = load_config("l1c")
 
 # --- produce L1C ---
-generate_l1c_from_l1b(
+generate_l1c(
     fullpath_l1b="/path/to/L1B/product",
     res=res,
     ancillary_list=config["ancillary_list"],
