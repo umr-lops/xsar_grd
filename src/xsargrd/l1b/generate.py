@@ -175,6 +175,7 @@ def generate_l1b(
     out.attrs.update({'main_footprint':str(out.attrs['main_footprint'])})
     out.attrs['processing_version'] = version
     out.attrs['processing_level'] = 'L1B'
+    # TODO add config_id in attributes 
        
     # --- Step 7: Saving ---
     if save:
