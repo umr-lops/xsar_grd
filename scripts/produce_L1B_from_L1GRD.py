@@ -21,7 +21,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # --- Load config ---
-    config = load_config("l1b")
+    config = load_config()
 
     if args.config_id not in config:
         raise ValueError(
