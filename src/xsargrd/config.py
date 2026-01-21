@@ -3,7 +3,7 @@ from pathlib import Path
 import yaml
 import xsargrd
 
-def load_config(name: str) -> dict:
+def load_config() -> dict:
     """
     Load a YAML configuration file shipped with xsargrd.
 
@@ -17,7 +17,7 @@ def load_config(name: str) -> dict:
     config : dict
         Configuration parameters loaded from the YAML file.
     """
-    config_path = Path(xsargrd.__file__).parent / f"{name}_config.yaml"
+    config_path = Path(xsargrd.__file__).parent / "config.yaml"
 
     if not config_path.exists():
         raise FileNotFoundError(f"Config file not found: {config_path}")

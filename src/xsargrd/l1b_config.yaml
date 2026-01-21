@@ -1,9 +1,0 @@
-A01:
-  dirout: "/home/datawork-cersat-public/cache/project/sarwave/data/products/experiments/grd"
-  res: "100m"
-  tile_size:  17000
-  periodo_width: {'sample': 2000., 'line': 2000.}
-  periodo_overlap: {'sample': 1000., 'line': 1000.}
-  lowpass_width: {'line': 4750., 'sample': 4750.}
-  scatt_mode: "wst"
-  norient: 8
