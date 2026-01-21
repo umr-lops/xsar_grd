@@ -30,13 +30,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # --- Load configuration ---
-    config = load_config("l1c")
+    config = load_config()
+    if args.config_id not in config:
+        raise ValueError(
+            f"Unknown config_id '{args.config_id}'. "
+            f"Available configs: {list(config.keys())}"
+        )
     cfg = config[args.config_id]
+    res = cfg["res"]
     ancillary_list = cfg["auxilliary_dataset"]
     ancillary_names = list(ancillary_list.keys())
-
-    # --- Fixed resolution for now ---
-    res = "100m"
 
     # --- Create report directory ---
     report_dir = Path(args.report_dir)
