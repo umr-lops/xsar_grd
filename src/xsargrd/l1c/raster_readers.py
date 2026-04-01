@@ -1,9 +1,11 @@
 
 import numpy as np
 import xarray as xr
+import logging
 from datetime import datetime, timedelta
 from xsargrd.l1c.tools import url_get
 
+logger = logging.getLogger(__name__)
 
 def resource_strftime(resource, **kwargs):
     """
@@ -64,11 +66,11 @@ def ecmwf_0100_1h(fname, use_dask=False):
     -------
     xarray.Dataset
     """
-    ecmwf_ds = xr.open_dataset(
+    ecmwf_ds = open_netcdf_fallback(
         fname,
-        chunks={"Longitude": 1000, "Latitude": 1000},
         decode_timedelta=True
     ).isel(time=0)
+
     ecmwf_ds.attrs["time"] = datetime.fromtimestamp(
         ecmwf_ds.time.item() // 1000000000
     )
@@ -123,10 +125,14 @@ def ecmwf_0125_1h(fname):
     return ecmwf_ds
 
 
-def ww3_global_yearly_3h(filename, date):
+def ww3_global_yearly_3h(fname, date):
     str_time = datetime.strftime(date, "%Y-%m-%d-T%H:%M:%S.000000000")
 
-    ds = xr.open_dataset(filename)
+    ds = open_netcdf_fallback(
+        fname,
+        decode_timedelta=True
+    )
+
     dst = (
         ds.sel(time=str_time)
         .drop_vars("time")
@@ -136,3 +142,46 @@ def ww3_global_yearly_3h(filename, date):
     dst.rio.write_crs("EPSG:4326", inplace=True)
 
     return dst
+
+
+def open_netcdf_fallback(
+    fname,
+    engines=("h5netcdf", "netcdf4"),
+    **open_kwargs,
+):
+    """
+    Open a NetCDF file using several xarray engines as fallback.
+
+    Parameters
+    ----------
+    fname : str or Path
+        Path to the NetCDF file.
+    engines : tuple/list
+        Engines to try in order.
+    **open_kwargs :
+        Additional kwargs passed to xr.open_dataset().
+
+    Returns
+    -------
+    xr.Dataset
+    """
+
+    last_error = None
+
+    for engine in engines:
+        try:
+            ds = xr.open_dataset(
+                fname,
+                engine=engine,
+                **open_kwargs
+            )
+            logger.info(f"[IO] Opened {fname} with engine='{engine}'")
+            return ds
+
+        except Exception as e:
+            last_error = e
+            logger.info(f"[IO] Engine '{engine}' failed for {fname}: {e}")
+
+    raise RuntimeError(
+        f"Could not open {fname} with engines {engines}"
+    ) from last_error
