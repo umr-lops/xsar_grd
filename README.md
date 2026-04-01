@@ -70,8 +70,8 @@ Processing parameters are defined using YAML configuration files (e.g. `l1b_conf
 from xsargrd import generate_l1b, load_config
 
 # --- load L1B configuration ---
-config = load_config()
-c = config["A01"]
+config_id = "J01"
+c = load_config()[config_id]
 
 # --- produce L1B ---
 generate_l1b(
@@ -93,8 +93,8 @@ generate_l1b(
 from xsargrd import generate_l1c, load_config
 
 # --- load L1C configuration ---
-config = load_config()
-c = config["A01"]
+config_id = "J01"
+c = load_config()[config_id]
 
 # --- produce L1C ---
 generate_l1c(
