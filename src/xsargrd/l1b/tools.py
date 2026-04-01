@@ -9,84 +9,10 @@ from xsarslc.processing.xspectra import get_bright_target_mask
 
 logger = logging.getLogger(__name__)
 
-# def build_l1b_fileout(
-#         fullpath : str,
-#         dirout : str,
-#         resolution : str,
-#         tile_size : int = 17000,
-#         scatt_mode : str = None,
-#         J : int = None,
-#         L : int = None,
-#         version : str = None,
-#         level : str = 'l1b'
-# ) -> Tuple[str, str]:
-#     """
-#     Build output file path and name based on input parameters.  
-    
-#     Parameters
-#     ----------
-#     fullpath : str
-#         Full path to the SAR repository.
-#     dirout : str
-#         Directory where the output file will be saved.
-#         If None, defaults to the current directory.
-#     resolution : str
-#         Resolution of the product (e.g., '10m').
-#     POL : str, optional
-#         Polarisation of the product (default is 'VV').
-    
-#     Returns
-#     -------
-#     Tuple[str, str]
-#         A tuple containing the output directory path and the output file name.
-#     """
-
-#     # Extracting mission and date information from the full path
-#     _ff = os.path.basename(fullpath)
-#     parts = _ff.split('_')
-#     mission = parts[0]
-#     mode = parts[1].lower()
-
-#     if 'S1' in mission:
-#         # For S1 missions, the date is in a different format
-#         date_str = parts[4][:8]
-#     elif 'RCM' in mission or 'RS2' in mission:
-#         date_str = parts[5]
-        
-#     year = date_str[:4]
-#     doy = str(
-#         datetime.strptime(date_str, "%Y%m%d").timetuple().tm_yday
-#     ).zfill(3)
-
-#     if 'RCM' in mission or 'RS2' in mission:
-#         prefix_out = _ff.lower()
-#     elif 'S1'in mission:
-#         prefix_out = os.path.splitext(_ff.lower())[0]
-#     else:
-#         raise ValueError(f"Unsupported mission type: {mission}")
-
-#     if scatt_mode is not None:
-#         file_out = prefix_out + f"_spc-{scatt_mode}_ts{tile_size}_j{J}_l{L}"
-#     else:
-#         file_out = prefix_out + f"_spc_ts{tile_size}"
-    
-#     if version is not None:
-#         file_out += f"_v{version.replace('.', '')}.nc"
-#     else:
-#         file_out += ".nc"
-
-#     if dirout is not None:
-#         path_out = os.path.join(dirout, mode, level.lower(), year, doy, _ff)
-#     else:
-#         path_out = os.path.join('.', _ff)
-
-#     path_out = os.path.join(path_out, 'res' + resolution)
-
-#     return path_out, file_out
 def build_l1b_fileout(
     fullpath: str,
     dirout: str,
-    resolution: str,
+    res: str,
     *,
     config_id: str | None = None,
     version: str | None = None,
@@ -101,21 +27,20 @@ def build_l1b_fileout(
     safename = os.path.basename(fullpath)
     parts = safename.split("_")
 
-    mission = parts[0]
-    mode = parts[1].lower()
-
     # --- Resolve configuration identifier ---
     cfg_id = config_id.lower() if config_id is not None else "a00"
 
     # --- Mission handling ---
+    mission = parts[0]
     if "S1" in mission:
         date_str = parts[4][:8]
-    elif "RCM" in mission or "RS2" in mission:
-        raise NotImplementedError(
-            f"L1B file naming for mission '{mission}' "
-            "is not implemented yet. "
-            "Please implement and validate path conventions first."
-        )
+        mode = parts[1].lower()
+    elif "RCM" in mission:
+        date_str = parts[5]
+        mode = parts[4].lower()
+    elif "RS2" in mission:
+        date_str = parts[5]
+        mode = parts[4].lower()
     else:
         raise ValueError(f"Unsupported mission type: {mission}")
 
@@ -136,12 +61,13 @@ def build_l1b_fileout(
     # --- Output directory ---
     path_out = os.path.join(
         dirout,
+        mission.lower(),
         mode,
         level.lower(),
         year,
         doy,
         safename,
-        f"res{resolution}",
+        f"res{res}",
     )
 
     return path_out, file_out
@@ -191,26 +117,6 @@ def check_tile_mask(tile_mask, nt):
         tile_mask.attrs['comment'] = 'Used as tile_mask.'
     else:
         raise ValueError(f'Unsupported tile_mask type: {type(tile_mask)}. Must be a DataArray of booleans.')
-    
-
-# def fill_bright_targets(da, bright_mask):
-#     """
-#     Fill bright targets in the DataArray with the mean value of non-bright areas.
-
-#     Parameters
-#     ----------
-#     da : xr.DataArray
-#         Input DataArray containing the data.
-#     bright_mask : xr.DataArray
-#         Boolean mask indicating bright targets (True for bright targets).
-
-#     Returns
-#     -------
-#     xr.DataArray
-#         DataArray with bright targets filled with the mean of non-bright areas.
-#     """
-#     mean_da = da.where(~bright_mask).mean(skipna=True)
-#     return da.where(~bright_mask, mean_da)
 
 
 def fill_bright_targets(da: xr.DataArray, bright_mask: xr.DataArray) -> xr.DataArray:
@@ -262,80 +168,6 @@ def fill_bright_targets(da: xr.DataArray, bright_mask: xr.DataArray) -> xr.DataA
     # Replace bright pixels by the corresponding mean
     # ------------------------------------------------------------------
     return da.where(~mask, mean_da)
-
-
-# def remove_bright_targets(
-#         tiles : xr.Dataset,
-#         varnames : list = ['digital_number', 'sigma0', 'nesz'],
-#         targetsize : dict = {'line':10, 'sample':10},
-#         guardsize : dict = {'line':350, 'sample':350},
-#         cluttersize : dict = {'line':1000, 'sample':1000},
-#         nstddev : float = 10,
-#         nstddev_neigh : float = 3.5,
-#         itermax : int = 10
-# ):
-#     """
-#     Remove bright targets from each tile in the dataset.
-
-#     Parameters
-#     ----------
-#     tiles : xr.Dataset
-#         Input Dataset containing the tiles.
-#     varnames : list
-#         List of variable names to process for bright target removal.
-#     targetsize : dict
-#         Dictionary specifying the size of the target in 'line' and 'sample' dimensions.
-#     guardsize : dict
-#         Dictionary specifying the size of the guard area in 'line' and 'sample' dimensions.
-#     cluttersize : dict
-#         Dictionary specifying the size of the clutter area in 'line' and 'sample' dimensions.
-#     nstddev : float
-#         Threshold for bright target detection.
-#     nstddev_neigh : float
-#         Treshold for bright target neighborhood detection.
-#     itermax : int
-#         Maximum number of iteration to maximize number of detection.
-
-#     Returns
-#     -------
-#     xr.DataArray
-#         DataArray with bright targets removed from each tile.
-#     xr.DataArray
-#         DataArray containing the bright target masks for each tile.
-#     xr.DataArray
-#         DataArray containing the bright target histograms for each tile.
-#     """
-#     bright_mask_all = []
-#     bright_hist_all = []
-#     indexes = tiles.tile.values
-#     for i in tqdm(indexes, total=indexes.size, desc="Bright target detection & removal", unit="tile"):
-#         tile = tiles.sel(tile=i)
-#         spacing = {"sample": tile.sampleSpacing.item(), "line": tile.lineSpacing.item()}
-#         nrcs = np.sqrt(tile.sigma0)
-#         bright_mask, bright_hist = get_bright_target_mask(nrcs, targetsize, guardsize, cluttersize, spacing, nstddev=nstddev, nstddev_neigh=nstddev_neigh, itermax=itermax)
-#         bright_mask = bright_mask.drop_vars([v for v in ["__line", "__sample"] if v in bright_mask.coords])
-#         bright_mask_all.append(bright_mask.expand_dims({"tile": [int(i)]}))
-#         bright_hist_all.append(bright_hist.expand_dims({"tile": [int(i)]}))
-
-#         # Fill bright targets in sigma0 and nrcs
-#         for varname in varnames:
-#             tile[varname] = fill_bright_targets(tile[varname], bright_mask)
-
-#         # Update the tiles dataset with the modified tile
-#         tiles.loc[dict(tile=i)] = tile
-    
-#     # concatenate bt mask for every tiles
-#     bright_mask_all = xr.concat(bright_mask_all, dim="tile")
-#     bright_hist_all = xr.concat(bright_hist_all, dim="tile")
-
-#     # update the bt_mask attrs
-#     bright_mask_all = bright_mask_all.drop_attrs(deep=True).assign_attrs({'long_name':'bright targets mask'})
-
-#     # rename da
-#     bright_mask_all.name = "bt_mask"
-#     bright_hist_all.name = "bt_hist"
-
-#     return tiles, bright_mask_all, bright_hist_all
 
 
 def remove_bright_targets(
@@ -512,3 +344,12 @@ def standardize_tile_coords(tiles: xr.Dataset) -> xr.Dataset:
     ds = ds.swap_dims({"tile_line": "line", "tile_sample": "sample"})
    
     return ds
+
+def sanitize_attrs(ds):
+    _ds = ds.copy()
+    def fix(attrs):
+        for k, v in list(attrs.items()):
+            if isinstance(v, bool):
+                attrs[k] = str(v)
+    fix(_ds.attrs)
+    return _ds
