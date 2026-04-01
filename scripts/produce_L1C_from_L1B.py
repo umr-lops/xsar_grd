@@ -17,8 +17,8 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--config_id",
-        default="A01",
-        help="L1C configuration identifier",
+        default="J01",
+        help="L1C configuration identifier (default: J01)",
     )
     script_dir = Path(__file__).resolve().parent
 

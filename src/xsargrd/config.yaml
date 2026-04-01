@@ -1,4 +1,4 @@
-A01:
+J01:
   dirout: "/home/datawork-cersat-public/cache/project/sarwave/data/products/experiments/grd"
   res: "100m"
   tile_size:  17000
@@ -14,5 +14,6 @@ A01:
       name: "ecmwf_0100_1h"
     ww3_global_yearly_3h:
       step: 3
-      pattern: "/home/datawork-WW3/PROJECT/SARWAVE/HINDCAST/GLOBAL_NOGQM*/3*/GLOB-30M/*/FIELD_NC/LOPS_WW3-GLOB-30M_%Y%m.nc"
+      #pattern: "/home/datawork-WW3/PROJECT/SARWAVE/HINDCAST/GLOBAL_NOGQM*/*/GLOB-30M/*/FIELD_NC/LOPS_WW3-GLOB-30M_%Y%m.nc"
+      pattern: "/scale/project/wave/WW3/PROJECT/CCI/RUNS/GLOB-30M/*/FIELD_NC/CCI_WW3-GLOB-30M_%Y%m.nc"
       name: "ww3_global_yearly_3h"
