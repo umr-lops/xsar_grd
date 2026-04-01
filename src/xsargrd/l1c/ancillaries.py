@@ -43,13 +43,18 @@ def append_ancillary_field(
     )
 
     matches = glob(filename)
-    if len(matches) != 1:
-        logger.debug(f"[Ancillary] No matching file for pattern: {filename}")
+    
+    if len(matches)==0:
+        logger.info(f"[Ancillary] No matching file for pattern: {filename}")
         return ds, False
-
-    logger.info(f"[Ancillary] Using file: {matches[0]}")
-
-    raster_ds = _load_ancillary_raster(ancillary, matches[0], closest_date)
+    
+    elif len(matches)==1:
+        logger.info(f"[Ancillary] Using file: {matches[0]}")
+        raster_ds = _load_ancillary_raster(ancillary, matches[0], closest_date)
+    
+    elif len(matches)>1:
+        logger.info(f"[Ancillary] More than 1 file detected (n={len(matches)}).\n Using file : {matches[0]}")
+        raster_ds = _load_ancillary_raster(ancillary, matches[0], closest_date)
 
     footprint = wkt.loads(ds.attrs["main_footprint"])
     raster_ds = raster_cropping_in_polygon_bounding_box(footprint, raster_ds)
