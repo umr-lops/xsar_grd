@@ -33,7 +33,7 @@ def enrich_l1b(
     if ancillary_list is None:
         ancillary_list = {}
 
-    ds = xr.open_dataset(l1b_fullpath)
+    ds = xr.open_dataset(l1b_fullpath, engine="h5netcdf")
 
     flag_ancillaries = {}
 
