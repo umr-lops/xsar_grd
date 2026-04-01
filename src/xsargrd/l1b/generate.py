@@ -15,6 +15,7 @@ from xsargrd.l1b.tools import (
     get_ocean_mask,
     remove_bright_targets,
     standardize_tile_coords,
+    sanitize_attrs,
 )
 
 # --- version ---
@@ -206,6 +207,7 @@ def generate_l1b(
 
             # Write NetCDF file with error handling
             try:
+                out = sanitize_attrs(out)
                 out.to_netcdf(file_path)
                 logger.info(f"[IO] File written to: {file_path}")
             except Exception as e:
