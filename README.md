@@ -51,7 +51,7 @@ Some mission-specific configurations may raise `NotImplementedError` where suppo
 ### Using pip (editable mode, recommended for development)
 
 ```bash
-git clone https://github.com/Egauvrit/xsar_grd.git
+git clone https://github.com/umr-lops/xsar_grd.git
 cd xsar_grd
 pip install -e .
 ```
