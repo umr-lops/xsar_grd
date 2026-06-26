@@ -49,3 +49,8 @@ htmlcov/
 # Production
 */production_reports/
 */l1c_production_reports/
+*/add_sarwind_reports/
+
+# pixi environments
+.pixi/*
+!.pixi/config.toml
